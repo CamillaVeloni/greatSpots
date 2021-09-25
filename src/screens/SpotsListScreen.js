@@ -1,12 +1,29 @@
-import React, {useState} from 'react'; 
-import { View, Text, StyleSheet} from 'react-native'; 
+import React from 'react';
+import { FlatList, StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
 
-const SpotsListScreen = () => { 
-    return ( 
-     <View> 
-         <Text>Lista de lugares</Text>
-     </View>
-)};
+import SpotItem from '../components/spots/SpotItem';
+
+const SpotsListScreen = ({ navigation }) => {
+  const spotsList = useSelector(({ spots }) => spots.spots);
+  
+  return (
+    <FlatList
+      data={spotsList}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <SpotItem
+          title={item.title}
+          address="Figeredo Du Bum DUM"
+          image={item.photoUri}
+          onSelected={() => {
+            navigation.navigate('SpotDetail', { spotId: item.id, spotTitle: item.title })
+          }}
+        />
+      )}
+    />
+  );
+};
 
 const styles = StyleSheet.create({});
 

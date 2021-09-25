@@ -1,7 +1,11 @@
 import React, { useCallback, useReducer } from 'react';
-import { ScrollView, View, StyleSheet, Button } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { ScrollView, View, StyleSheet, Button, Alert } from 'react-native';
+
+import * as spotsActions from '../store/actions/spots';
 import Colors from '../../constants/Colors';
 import Input from '../components/commons/Input';
+import ImagePicker from '../components/commons/ImagePicker';
 
 const FORM_INPUT_UPDATED = 'formInputUpdated';
 
@@ -9,12 +13,12 @@ const formReducer = (state, action) => {
   switch (action.type) {
     case FORM_INPUT_UPDATED:
       const updatedValues = {
-        ...state.inputValues,
-        [action.input]: action.inputValue,
+        ...state.formValues,
+        [action.identifier]: action.value,
       };
       const updatedValidities = {
-        ...state.inputValidities,
-        [action.input]: action.isValid,
+        ...state.formValidities,
+        [action.identifier]: action.isValid,
       };
       let updatedIsFormValid = true;
       for (const key in updatedValidities) {
@@ -22,8 +26,8 @@ const formReducer = (state, action) => {
       }
 
       return {
-        inputValues: updatedValues,
-        inputValidities: updatedValidities,
+        formValues: updatedValues,
+        formValidities: updatedValidities,
         isFormValid: updatedIsFormValid,
       };
     default:
@@ -31,13 +35,17 @@ const formReducer = (state, action) => {
   }
 };
 
-const SpotCreateScreen = () => {
+const SpotCreateScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+
   const [form, formDispatch] = useReducer(formReducer, {
-    inputValues: {
+    formValues: {
       title: '',
+      photo: null,
     },
-    inputValidities: {
+    formValidities: {
       title: false,
+      photo: false,
     },
     isFormValid: false,
   });
@@ -46,8 +54,8 @@ const SpotCreateScreen = () => {
     (identifier, value, isValid) => {
       formDispatch({
         type: FORM_INPUT_UPDATED,
-        input: identifier,
-        inputValue: value,
+        identifier,
+        value,
         isValid,
       });
     },
@@ -55,8 +63,20 @@ const SpotCreateScreen = () => {
   );
 
   const savingSpotHandler = () => {
-    console.log('saving')
-  }
+    if (!form.isFormValid) {
+      Alert.alert(
+        'O formulário está incompleto',
+        'Por favor, reveja o formulário',
+        [{ text: 'Okay' }]
+      );
+      return;
+    }
+
+    dispatch(
+      spotsActions.savingSpot(form.formValues.title, form.formValues.photo)
+    );
+    navigation.goBack();
+  };
 
   return (
     <ScrollView>
@@ -68,6 +88,7 @@ const SpotCreateScreen = () => {
           onInputChange={formInputHandler}
           required
         />
+        <ImagePicker id="photo" onImageTaken={formInputHandler} />
         <Button
           title="Salvar Spot"
           onPress={savingSpotHandler}

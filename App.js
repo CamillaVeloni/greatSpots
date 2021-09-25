@@ -1,6 +1,9 @@
 import React from 'react';
-import NavigationContainer from './src/navigation/NavigationContainer';
+import { Provider } from 'react-redux';
 import { useFonts } from 'expo-font';
+
+import { store } from './src/store';
+import NavigationContainer from './src/navigation/NavigationContainer';
 import Spinner from './src/components/commons/Spinner';
 
 export default function App() {
@@ -12,5 +15,9 @@ export default function App() {
 
   if(!loadedFonts) return <Spinner />;
 
-  return <NavigationContainer />;
+  return (
+    <Provider store={store}>
+      <NavigationContainer />
+    </Provider>
+  );
 }

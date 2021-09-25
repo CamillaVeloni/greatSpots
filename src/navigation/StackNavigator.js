@@ -1,5 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/core';
 import { Platform } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
@@ -29,7 +30,7 @@ const StackNavigator = () => {
         name="Spots"
         component={SpotsListScreen}
         options={({ navigation }) => ({
-          title: 'Todos Spots',
+          headerTitle: 'Todos Spots',
           headerRight: () => (
             <HeaderButtons HeaderButtonComponent={HeaderButton}>
               <Item
@@ -41,11 +42,23 @@ const StackNavigator = () => {
           ),
         })}
       />
-      <Stack.Screen name="SpotDetail" component={SpotDetailScreen} />
-      <Stack.Screen name="SpotCreate" component={SpotCreateScreen}
+      <Stack.Screen
+        name="SpotDetail"
+        component={SpotDetailScreen}
+        options={({ route }) => ({
+          headerTitle: route.params.spotTitle,
+        })}
+      />
+      <Stack.Screen
+        name="SpotCreate"
+        component={SpotCreateScreen}
         options={{ title: 'Adicionar Spot' }}
       />
-      <Stack.Screen name="Map" component={MapScreen} />
+      <Stack.Screen
+        name="Map"
+        component={MapScreen}
+        options={{ headerTitle: 'Mapa' }}
+      />
     </Stack.Navigator>
   );
 };
