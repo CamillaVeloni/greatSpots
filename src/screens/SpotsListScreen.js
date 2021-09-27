@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import SpotItem from '../components/spots/SpotItem';
+import * as spotsActions from '../store/actions/spots';
 
 const SpotsListScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const spotsList = useSelector(({ spots }) => spots.spots);
+
+  useEffect(() => {
+    dispatch(spotsActions.fetchingSpots());
+  }, [dispatch]);
   
   return (
     <FlatList
@@ -14,7 +20,7 @@ const SpotsListScreen = ({ navigation }) => {
       renderItem={({ item }) => (
         <SpotItem
           title={item.title}
-          address="Figeredo Du Bum DUM"
+          address={item.address}
           image={item.photoUri}
           onSelected={() => {
             navigation.navigate('SpotDetail', { spotId: item.id, spotTitle: item.title })

@@ -8,7 +8,7 @@ import NavigationContainer from './src/navigation/NavigationContainer';
 import Spinner from './src/components/commons/Spinner';
 
 init().then(() => {
-  console.log('Database inicializado.')
+  //console.log('Database inicializado.')
 }).catch((err) => {
   console.log('Database não inicializado.');
   console.log(err)
