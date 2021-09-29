@@ -6,6 +6,7 @@ import * as spotsActions from '../store/actions/spots';
 import Colors from '../../constants/Colors';
 import Input from '../components/commons/Input';
 import ImagePicker from '../components/commons/ImagePicker';
+import LocationPicker from '../components/spots/LocationPicker';
 
 const FORM_INPUT_UPDATED = 'formInputUpdated';
 
@@ -89,6 +90,7 @@ const SpotCreateScreen = ({ navigation }) => {
           required
         />
         <ImagePicker id="photo" onImageTaken={formInputHandler} />
+        <LocationPicker />
         <Button
           title="Salvar Spot"
           onPress={savingSpotHandler}
