@@ -23,6 +23,9 @@ const ImgPicker = ({ onImageTaken, id }) => {
     return true;
   };
 
+  // Escolhendo foto 
+  // Verifica se possui permissão para usar câmera primeiro e depois espera pelo 'retorno' da imagem
+  // Seta imagem preview e aciona function vinda do component pai (i.e. onImageTaken)
   const choosingImageHandler = async () => {
     const hasPermission = await verifyPermissions();
     if (!hasPermission) return;

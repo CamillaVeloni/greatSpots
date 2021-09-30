@@ -36,17 +36,19 @@ const formReducer = (state, action) => {
   }
 };
 
-const SpotCreateScreen = ({ navigation }) => {
+const SpotCreateScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
 
   const [form, formDispatch] = useReducer(formReducer, {
     formValues: {
       title: '',
-      photo: null,
+      photo: '',
+      location: null,
     },
     formValidities: {
       title: false,
       photo: false,
+      location: false,
     },
     isFormValid: false,
   });
@@ -74,7 +76,11 @@ const SpotCreateScreen = ({ navigation }) => {
     }
 
     dispatch(
-      spotsActions.savingSpot(form.formValues.title, form.formValues.photo)
+      spotsActions.savingSpot(
+        form.formValues.title,
+        form.formValues.photo,
+        form.formValues.location
+      )
     );
     navigation.goBack();
   };
@@ -90,7 +96,11 @@ const SpotCreateScreen = ({ navigation }) => {
           required
         />
         <ImagePicker id="photo" onImageTaken={formInputHandler} />
-        <LocationPicker />
+        <LocationPicker
+          id="location"
+          route={route}
+          onLocationPicked={formInputHandler}
+        />
         <Button
           title="Salvar Spot"
           onPress={savingSpotHandler}

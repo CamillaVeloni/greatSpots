@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,13 +8,27 @@ import {
   Alert,
 } from 'react-native';
 import * as Location from 'expo-location';
+import { useNavigation } from '@react-navigation/native';
 
 import Colors from '../../../constants/Colors';
 import MapPreview from '../commons/MapPreview';
 
-const LocationPicker = () => {
+const LocationPicker = ({ id, route, onLocationPicked }) => {
+  const navigation = useNavigation();
+
   const [pickedLocation, setPickedLocation] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
+
+  // Verificando se retornou local selecionado do MapScreen
+  const mapPickedLocation = route.params?.pickedLocation ?? null;
+
+  // Checando se foi escolhido um local no mapa
+  useEffect(() => {
+    if (mapPickedLocation) {
+      setPickedLocation(mapPickedLocation);
+      onLocationPicked(id, mapPickedLocation, true);
+    };
+  }, [mapPickedLocation, onLocationPicked]);
 
   const verifyPermissions = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -31,7 +45,10 @@ const LocationPicker = () => {
     return true;
   };
 
-  const getLocationHandler = async () => {
+  // Pegando local do usuário pelo expo location (usa a function verifyPermissions para localizar dispositivo)
+  // Seta static img (i.e. MapPreview)
+  // Aciona function do component pai ~~ passa o local selecionado para o form do SpotCreateScreen
+  const pickOnLocationHandler = async () => {
     const hasPermission = await verifyPermissions();
     if (!hasPermission) return;
 
@@ -42,11 +59,15 @@ const LocationPicker = () => {
         accuracy: Location.Accuracy.Lowest,
       });
       // const location = await Location.getLastKnownPositionAsync();
-      console.log(location);
       setPickedLocation({
-        lat: location.coords.latitude,
-        lng: location.coords.longitude,
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
       });
+      onLocationPicked( id, {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      }, true);
+
     } catch (err) {
       Alert.alert(
         'Não foi possível rastrear sua localização',
@@ -58,20 +79,35 @@ const LocationPicker = () => {
     setIsFetching(false);
   };
 
+  const pickOnMapHandler = () => {
+    navigation.navigate('Map');
+  };
+
   return (
     <View style={styles.container}>
-      <MapPreview style={styles.mapPreview} location={pickedLocation}>
+      <MapPreview
+        onPress={pickOnMapHandler}
+        style={styles.mapPreview}
+        location={pickedLocation}
+      >
         {isFetching ? (
           <ActivityIndicator color={Colors.primary} size="large" />
         ) : (
           <Text style={styles.text}>Nenhum local foi escolhido ainda!</Text>
         )}
       </MapPreview>
-      <Button
-        title="Pegar minha localização"
-        onPress={getLocationHandler}
-        color={Colors.primary}
-      />
+      <View style={styles.containerActions}>
+        <Button
+          title="Minha localização"
+          onPress={pickOnLocationHandler}
+          color={Colors.primary}
+        />
+        <Button
+          title="Mapa"
+          onPress={pickOnMapHandler}
+          color={Colors.primary}
+        />
+      </View>
     </View>
   );
 };
@@ -87,6 +123,11 @@ const styles = StyleSheet.create({
     height: 150,
     borderColor: '#ccc',
     borderWidth: 1,
+  },
+  containerActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
   },
   text: {
     fontFamily: 'nunito-regular',
