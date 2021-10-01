@@ -42,6 +42,7 @@ export const insertSpot = (title, photoUri, address, lat, lng) => {
   return promise;
 }
 
+// Pegando Spots já salvos do sqlite
 export const fetchSpots = () => {
   const promise = new Promise((resolve, reject) => {
     database.transaction((tx) => {

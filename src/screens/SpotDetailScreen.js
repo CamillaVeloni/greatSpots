@@ -1,12 +1,25 @@
-import React, {useState} from 'react'; 
-import { View, Text, StyleSheet} from 'react-native'; 
+import React, { useState } from 'react';
+import { ScrollView, View, Text, StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
 
-const SpotDetailScreen = () => { 
-    return ( 
-     <View> 
-         <Text>detalhes do lugar</Text>
-     </View>
-)};
+import MapPreview from '../components/commons/MapPreview';
+
+const SpotDetailScreen = ({ route }) => {
+  const { spotId } = route.params;
+  const spotDetails = useSelector(({ spots }) =>
+    spots.spots.find((spot) => spot.id === spotId)
+  );
+
+  return (
+    <ScrollView>
+      <Image />
+      <View>
+        <Text>{spotDetails.address}</Text>
+        <MapPreview />
+      </View>
+    </ScrollView>
+  );
+};
 
 const styles = StyleSheet.create({});
 

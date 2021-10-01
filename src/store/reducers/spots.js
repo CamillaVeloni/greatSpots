@@ -10,14 +10,27 @@ export default (state = INITIAL_STATE, action) => {
     case SET_SPOTS:
       return {
         spots: action.payload.map(
-          (spot) => new Spot(spot.id.toString(), spot.title, spot.photoUri)
+          (spot) =>
+            new Spot(
+              spot.id.toString(),
+              spot.title,
+              spot.photoUri,
+              spot.address,
+              spot.lat,
+              spot.lng
+            )
         ),
       };
     case ADD_SPOT:
+      const { lat, lng } = action.payload.coords;
+
       const newSpot = new Spot(
         action.payload.id,
         action.payload.title,
-        action.payload.photo
+        action.payload.photo,
+        action.payload.address,
+        lat,
+        lng
       );
       return {
         spots: state.spots.concat(newSpot),
